@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Pygame.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Pygame.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Player.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Player.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Vector.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Vector.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Player.py",
+              "DocumentMoniker": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Player.py",
+              "RelativeDocumentMoniker": "Pygame\\Player.py",
+              "ToolTip": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Player.py",
+              "RelativeToolTip": "Pygame\\Player.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACEAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T19:48:24.991Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Vector.py",
+              "DocumentMoniker": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Vector.py",
+              "RelativeDocumentMoniker": "Pygame\\Vector.py",
+              "ToolTip": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Vector.py",
+              "RelativeToolTip": "Pygame\\Vector.py",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAACoAAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T02:34:24.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Pygame.py",
+              "DocumentMoniker": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Pygame.py",
+              "RelativeDocumentMoniker": "Pygame\\Pygame.py",
+              "ToolTip": "D:\\GitHub\\CS 3080 - classwork\\Pygame\\Pygame\\Pygame.py",
+              "RelativeToolTip": "Pygame\\Pygame.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T02:19:14.738Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

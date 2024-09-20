@@ -1,0 +1,122 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\GitHub\\GDD3400\\Pygame - Copy\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Player.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Player.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Constants.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Constants.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Vector.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Vector.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Enemy.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Enemy.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Pygame.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Pygame.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Steering.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{056DD8C1-61C7-4DA5-B1F0-761C2477BC2B}|Pygame\\Pygame.pyproj|solutionrelative:Pygame\\Steering.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Steering.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Steering.py",
+              "RelativeDocumentMoniker": "Pygame\\Steering.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Steering.py",
+              "RelativeToolTip": "Pygame\\Steering.py",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAABsAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-16T05:21:55.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Enemy.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Enemy.py",
+              "RelativeDocumentMoniker": "Pygame\\Enemy.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Enemy.py",
+              "RelativeToolTip": "Pygame\\Enemy.py",
+              "ViewState": "AQIAACQAAAAAAAAAAAAAADYAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-16T03:52:03.954Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Constants.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Constants.py",
+              "RelativeDocumentMoniker": "Pygame\\Constants.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Constants.py",
+              "RelativeToolTip": "Pygame\\Constants.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-16T00:35:49.761Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Player.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Player.py",
+              "RelativeDocumentMoniker": "Pygame\\Player.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Player.py",
+              "RelativeToolTip": "Pygame\\Player.py",
+              "ViewState": "AQIAACQAAAAAAAAAAAAAADcAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T19:48:24.991Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Vector.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Vector.py",
+              "RelativeDocumentMoniker": "Pygame\\Vector.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Vector.py",
+              "RelativeToolTip": "Pygame\\Vector.py",
+              "ViewState": "AQIAABsAAAAAAAAAAAAAACgAAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T02:34:24.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Pygame.py",
+              "DocumentMoniker": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Pygame.py",
+              "RelativeDocumentMoniker": "Pygame\\Pygame.py",
+              "ToolTip": "D:\\GitHub\\GDD3400\\Pygame - Copy\\Pygame\\Pygame.py",
+              "RelativeToolTip": "Pygame\\Pygame.py",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABoAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-09-08T02:19:14.738Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

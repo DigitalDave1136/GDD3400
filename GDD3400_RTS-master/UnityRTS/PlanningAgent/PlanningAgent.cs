@@ -248,8 +248,6 @@ namespace GameManager
                     // If this troop is idle, give him something to attack
                     Unit troopUnit = GameManager.Instance.GetUnit(troopNbr);
                     
-                    
-                    
                     if (troopUnit.CurrentAction == UnitAction.IDLE)
                     {
                         // If there are archers to attack
@@ -437,8 +435,8 @@ namespace GameManager
         public override void Update()
         {
             UpdateGameState();
-            switch(actualPlayerState) {
-
+            switch (actualPlayerState)
+            {
                 case PlayerState.Idle:
                     //Do what you want in the idle state
                     break;
@@ -448,10 +446,13 @@ namespace GameManager
                     break;
                 case PlayerState.Army:
                     //Do what you want in the Army state
+                    BaseBuilding();
                     ArmyBuilding();
                     break;
                 case PlayerState.Attack:
                     //Do what you want in the Attack state
+                    AttackPhase();
+                    ArmyBuilding();
                     break;
             }
             // If we have at least one base, assume the first one is our "main" base
@@ -461,16 +462,22 @@ namespace GameManager
                 //Debug.Log("BaseNbr " + mainBaseNbr);
                 //Debug.Log("MineNbr " + mainMineNbr);
             }
+            if (mines.Count == 1)
+            {
+                mainMineNbr = mines[0];
+                return;
+            }
             //If we're missing a building and we still can collect resources, then we rebuild
-            if ((myBases.Count == 0 || myBarracks.Count == 0 || myRefineries.Count == 0) && mines.Count > 0 && Gold >= Constants.COST[UnitType.REFINERY])
+            if ((myBases.Count == 0 || myBarracks.Count == 0) && mines.Count > 0 && Gold >= Constants.COST[UnitType.BARRACKS])
             {
                 //Change to build base state
                 actualPlayerState = PlayerState.Base;
             }
-            if (((mySoldiers.Count + myArchers.Count) * 1.25 < enemySoldiers.Count + enemyArchers.Count) && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
+            else if (mySoldiers.Count + myArchers.Count < 4 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
             {
                 actualPlayerState = PlayerState.Army;
-            }if (mySoldiers.Count + myArchers.Count > 3)
+            }
+            else
             {
                 actualPlayerState = PlayerState.Attack;
             }
@@ -492,6 +499,8 @@ namespace GameManager
                     }
                 }
             }
+
+            
         }
 
         private void BaseBuilding()

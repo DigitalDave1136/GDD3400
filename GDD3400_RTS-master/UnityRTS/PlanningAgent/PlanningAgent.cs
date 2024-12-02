@@ -250,48 +250,20 @@ namespace GameManager
                     
                     if (troopUnit.CurrentAction == UnitAction.IDLE)
                     {
-                        // If there are archers to attack
-                        if (enemyArchers.Count > 0)
+                        // If there are barracks to attack
+                        if (enemyBarracks.Count > 0)
                         {
-                            //Target the nearest one
-                            Unit targetUnit = GameManager.Instance.GetUnit(enemyArchers[0]);
-                            float dist = 10000000;
-                            foreach (int enemyNbr in enemyArchers)
-                            {
-                                Unit enemyUnit = GameManager.Instance.GetUnit(enemyArchers[enemyNbr]);
-                                float dist0 = Vector3.Distance(troopUnit.WorldPosition, enemyUnit.WorldPosition);
-                                if(dist > dist0)
-                                {
-                                    dist = dist0;
-                                    targetUnit = enemyUnit;
-                                }
-                            }
-                            //Attack target
-                            Attack(troopUnit, targetUnit);
+                            Attack(troopUnit, GameManager.Instance.GetUnit(enemyBarracks[UnityEngine.Random.Range(0, enemyBarracks.Count)]));
+                        }
+                        // If there are archers to attack
+                        else if (enemyArchers.Count > 0)
+                        {
+                            Attack(troopUnit, GameManager.Instance.GetUnit(enemyArchers[0]));
                         }
                         // If there are soldiers to attack
                         else if (enemySoldiers.Count > 0)
                         {
-                            //Target the nearest one
-                            Unit targetUnit = GameManager.Instance.GetUnit(enemySoldiers[0]);
-                            float dist = 10000000;
-                            foreach (int enemyNbr in enemySoldiers)
-                            {
-                                Unit enemyUnit = GameManager.Instance.GetUnit(enemySoldiers[enemyNbr]);
-                                float dist0 = Vector3.Distance(troopUnit.WorldPosition, enemyUnit.WorldPosition);
-                                if (dist > dist0)
-                                {
-                                    dist = dist0;
-                                    targetUnit = enemyUnit;
-                                }
-                            }
-                            //Attack target
-                            Attack(troopUnit, targetUnit);
-                        }
-                        // If there are barracks to attack
-                        else if (enemyBarracks.Count > 0)
-                        {
-                            Attack(troopUnit, GameManager.Instance.GetUnit(enemyBarracks[UnityEngine.Random.Range(0, enemyBarracks.Count)]));
+                            Attack(troopUnit, GameManager.Instance.GetUnit(enemySoldiers[0]));
                         }
                         // If there are workers to attack
                         else if (enemyWorkers.Count > 0)
@@ -473,7 +445,7 @@ namespace GameManager
                 //Change to build base state
                 actualPlayerState = PlayerState.Base;
             }
-            else if (mySoldiers.Count + myArchers.Count < 4 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
+            else if (mySoldiers.Count + myArchers.Count < 3 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
             {
                 actualPlayerState = PlayerState.Army;
             }
@@ -558,14 +530,14 @@ namespace GameManager
             {
                 // Get the barracks
                 Unit barracksUnit = GameManager.Instance.GetUnit(barracksNbr);
-
+                /*
                 // If this barracks still exists, is idle, we need archers, and have gold
                 if (barracksUnit != null && barracksUnit.IsBuilt
                          && barracksUnit.CurrentAction == UnitAction.IDLE
                          && Gold >= Constants.COST[UnitType.ARCHER])
                 {
                     Train(barracksUnit, UnitType.ARCHER);
-                }
+                }*/
                 // If this barracks still exists, is idle, we need soldiers, and have gold
                 if (barracksUnit != null && barracksUnit.IsBuilt
                     && barracksUnit.CurrentAction == UnitAction.IDLE

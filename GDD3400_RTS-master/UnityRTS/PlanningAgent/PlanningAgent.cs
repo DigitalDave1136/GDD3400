@@ -7,6 +7,7 @@ using System;
 using UnityEngine.Playables;
 using static UnityEngine.UI.GridLayoutGroup;
 using System.Diagnostics.Tracing;
+using System.Diagnostics.Eventing.Reader;
 
 /////////////////////////////////////////////////////////////////////////////
 // This is the Moron Agent
@@ -122,23 +123,35 @@ namespace GameManager
         /// </summary>
         private List<Vector3Int> buildPositions { get; set; }
 
-            /// <summary>
-            /// Finds all of the possible build locations for a specific UnitType.
-            /// Currently, all structures are 3x3, so these positions can be reused
-            /// for all structures (Base, Barracks, Refinery)
-            /// Run this once at the beginning of the game and have a list of
-            /// locations that you can use to reduce later computation.  When you
-            /// need a location for a build-site, simply pull one off of this list,
-            /// determine if it is still buildable, determine if you want to use it
-            /// (perhaps it is too far away or too close or not close enough to a mine),
-            /// and then simply remove it from the list and build on it!
-            /// This method is called from the Awake() method to run only once at the
-            /// beginning of the game.
-            /// </summary>
-            /// <param name="unitType">the type of unit you want to build</param>
-            public void FindProspectiveBuildPositions(UnitType unitType)
+        //private bool isBuildingState = false;
+        //private bool isArmyState = false;
+        //private bool isAttackState = false;
+
+        private float valueTrainSoldier = 0;
+        private float valueTrainArcher = 0;
+        private float valueBuildBase = 0;
+        private float valueBuildBarracks = 0;
+        private float valueBuildRefinery = 0;
+        private int roundNumber;
+
+
+        /// <summary>
+        /// Finds all of the possible build locations for a specific UnitType.
+        /// Currently, all structures are 3x3, so these positions can be reused
+        /// for all structures (Base, Barracks, Refinery)
+        /// Run this once at the beginning of the game and have a list of
+        /// locations that you can use to reduce later computation.  When you
+        /// need a location for a build-site, simply pull one off of this list,
+        /// determine if it is still buildable, determine if you want to use it
+        /// (perhaps it is too far away or too close or not close enough to a mine),
+        /// and then simply remove it from the list and build on it!
+        /// This method is called from the Awake() method to run only once at the
+        /// beginning of the game.
+        /// </summary>
+        /// <param name="unitType">the type of unit you want to build</param>
+        public void FindProspectiveBuildPositions(UnitType unitType)
             {
-            
+            roundNumber = 0;
             //Gets the entire map in case the entire map isn't a valid position.
             for (int i = 0; i < GameManager.Instance.MapSize.x; ++i)
             {
@@ -318,12 +331,13 @@ namespace GameManager
         public override void Learn()
         {
             Debug.Log("Nbr Wins: " + AgentNbrWins);
-
+            roundNumber ++;
             //Debug.Log("PlanningAgent::Learn");
             Log("value 1");
             Log("value 2");
             Log("value 3a, 3b");
             Log("value 4");
+
         }
 
         /// <summary>
@@ -423,8 +437,8 @@ namespace GameManager
                     break;
                 case PlayerState.Attack:
                     //Do what you want in the Attack state
-                    AttackPhase();
                     ArmyBuilding();
+                    AttackPhase();
                     break;
             }
             // If we have at least one base, assume the first one is our "main" base
@@ -445,7 +459,7 @@ namespace GameManager
                 //Change to build base state
                 actualPlayerState = PlayerState.Base;
             }
-            else if (mySoldiers.Count + myArchers.Count < 3 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
+            else if (mySoldiers.Count + myArchers.Count < 10 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
             {
                 actualPlayerState = PlayerState.Army;
             }
@@ -471,39 +485,43 @@ namespace GameManager
                     }
                 }
             }
-
-            
         }
 
         private void BaseBuilding()
         {
-            // If we don't have 2 bases, build a base
-            if (myBases.Count == 0 && Gold >= Constants.COST[UnitType.BASE])
+            valueBuildBase = 1 - myBases.Count;
+            valueBuildBarracks = myBases.Count - myBarracks.Count + myRefineries.Count;
+            valueBuildRefinery = (myBases.Count + myBarracks.Count)/2 - myRefineries.Count;
+
+            if(valueBuildBase > valueBuildBarracks && valueBuildBase > valueBuildRefinery)
             {
-                mainBaseNbr = -1;
-                Debug.Log("Building the base");
-                BuildBuilding(UnitType.BASE);
+                Debug.Log("valueBuildBase Heuristic Works");
+                // If we don't have 2 bases, build a base
+                if (Gold >= Constants.COST[UnitType.BASE])
+                {
+                    mainBaseNbr = -1;
+                    Debug.Log("Building the base");
+                    BuildBuilding(UnitType.BASE);
+                }
             }
-            else
+            else if(valueBuildBarracks > valueBuildBase && valueBuildBarracks > valueBuildRefinery)
             {
+                Debug.Log("valueBuildBarracks Heuristic Works");
                 // If we don't have any barracks, build a barracks
-                if (myBarracks.Count == 0 && Gold >= Constants.COST[UnitType.BARRACKS])
+                if (Gold >= Constants.COST[UnitType.BARRACKS])
                 {
                     BuildBuilding(UnitType.BARRACKS);
                     Debug.Log("Building the barracks");
                 }
-                else
+            }
+            else if (valueBuildRefinery > valueBuildBarracks && valueBuildRefinery > valueBuildBase)
+            {
+                Debug.Log("valueBuildRefinery Heuristic Works");
+                // If we don't have any barracks, build a barracks
+                if (Gold >= Constants.COST[UnitType.REFINERY])
                 {
-                    // If we don't have any barracks, build a barracks
-                    if (myRefineries.Count == 0 && Gold >= Constants.COST[UnitType.REFINERY])
-                    {
-                        Debug.Log("Building the refinery");
-                        BuildBuilding(UnitType.REFINERY);
-                    }
-                    else
-                    {
-                        
-                    }
+                    Debug.Log("Building the refinery");
+                    BuildBuilding(UnitType.REFINERY);
                 }
             }
             // For each base, determine if it should train a worker
@@ -525,25 +543,34 @@ namespace GameManager
 
         private void ArmyBuilding()
         {
+            valueTrainSoldier = 1 - mySoldiers.Count / 100;
+            
+            valueTrainArcher = mySoldiers.Count / 100;
             // For each barracks, determine if it should train a soldier or an archer
             foreach (int barracksNbr in myBarracks)
             {
                 // Get the barracks
                 Unit barracksUnit = GameManager.Instance.GetUnit(barracksNbr);
-                /*
-                // If this barracks still exists, is idle, we need archers, and have gold
-                if (barracksUnit != null && barracksUnit.IsBuilt
-                         && barracksUnit.CurrentAction == UnitAction.IDLE
-                         && Gold >= Constants.COST[UnitType.ARCHER])
+                if (valueTrainArcher >= valueTrainSoldier)
                 {
-                    Train(barracksUnit, UnitType.ARCHER);
-                }*/
-                // If this barracks still exists, is idle, we need soldiers, and have gold
-                if (barracksUnit != null && barracksUnit.IsBuilt
-                    && barracksUnit.CurrentAction == UnitAction.IDLE
-                    && Gold >= Constants.COST[UnitType.SOLDIER])
+                    Debug.Log("train archer value amount: " + valueTrainSoldier);
+                    // If this barracks still exists, is idle, we need archers, and have gold
+                    if (barracksUnit != null && barracksUnit.IsBuilt
+                             && barracksUnit.CurrentAction == UnitAction.IDLE
+                             && Gold >= Constants.COST[UnitType.ARCHER])
+                    {
+                        Train(barracksUnit, UnitType.ARCHER);
+                    }
+                }else if(valueTrainSoldier > valueTrainArcher)
                 {
-                    Train(barracksUnit, UnitType.SOLDIER);
+                    Debug.Log("train soldier value amount: " + valueTrainSoldier);
+                    // If this barracks still exists, is idle, we need soldiers, and have gold
+                    if (barracksUnit != null && barracksUnit.IsBuilt
+                        && barracksUnit.CurrentAction == UnitAction.IDLE
+                        && Gold >= Constants.COST[UnitType.SOLDIER])
+                    {
+                        Train(barracksUnit, UnitType.SOLDIER);
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@ using UnityEngine.Playables;
 using static UnityEngine.UI.GridLayoutGroup;
 using System.Diagnostics.Tracing;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq.Expressions;
 
 /////////////////////////////////////////////////////////////////////////////
 // This is the Moron Agent
@@ -21,8 +22,9 @@ namespace GameManager
     ///</summary> 
     public class PlanningAgent : Agent
     {
-        private const int MAX_NBR_WORKERS = 30;
-        
+        /// <summary>
+        /// Enum for different states
+        /// </summary>
         private enum PlayerState
         {
             Idle,
@@ -30,6 +32,7 @@ namespace GameManager
             Army,
             Attack
         }
+        //Set first state to idle
         PlayerState actualPlayerState = PlayerState.Idle;
         #region Private Data
 
@@ -127,13 +130,49 @@ namespace GameManager
         //private bool isArmyState = false;
         //private bool isAttackState = false;
 
+        //Heuristic values
         private float valueTrainSoldier = 0;
         private float valueTrainArcher = 0;
         private float valueBuildBase = 0;
         private float valueBuildBarracks = 0;
         private float valueBuildRefinery = 0;
-        private int roundNumber;
 
+        //Dictionaries
+        Dictionary<float, float> historySoldiers = new Dictionary<float, float>();
+        Dictionary<float, float> historyWorkers = new Dictionary<float, float>();
+        Dictionary<float, float> historyRefineries = new Dictionary<float, float>();
+        Dictionary<float, float> historyArchers = new Dictionary<float, float>();
+        Dictionary<float, float> historyBarracks = new Dictionary<float, float>();
+        //number of units made
+        private float numSoldiers = 0;
+        private float numWorkers = 0;
+        private float numRefineries = 0;
+        private float numArchers = 0;
+        private float numBarracks = 0;
+
+        //Round data
+        private float timePassed = 0;
+        private float roundPerformance = 0;
+        private float previousWins = 0;
+
+        //Semi constants
+        private float maxSoldiers = 10;
+        private float maxWorkers = 10;
+        private float maxArchers = 10;
+        private float maxBarracks = 1;
+        private float maxRefineries = 1;
+
+        //For resetting
+        private float localMaxTest = 0;
+        System.Random rnd = new System.Random();
+        private float currLocalMax = 1000000;
+
+        //To deal with base building for count
+        private float previousBarracksCount = 0;
+        private float previousRefineriesCount = 0;
+
+        //Just for large number
+        private float largeNumber = 100000000000;
 
         /// <summary>
         /// Finds all of the possible build locations for a specific UnitType.
@@ -151,7 +190,6 @@ namespace GameManager
         /// <param name="unitType">the type of unit you want to build</param>
         public void FindProspectiveBuildPositions(UnitType unitType)
             {
-            roundNumber = 0;
             //Gets the entire map in case the entire map isn't a valid position.
             for (int i = 0; i < GameManager.Instance.MapSize.x; ++i)
             {
@@ -331,13 +369,127 @@ namespace GameManager
         public override void Learn()
         {
             Debug.Log("Nbr Wins: " + AgentNbrWins);
-            roundNumber ++;
             //Debug.Log("PlanningAgent::Learn");
-            Log("value 1");
-            Log("value 2");
-            Log("value 3a, 3b");
-            Log("value 4");
-
+            
+            //If we won
+            if (previousWins < AgentNbrWins)
+            {
+                //Round performance is time passed
+                roundPerformance = timePassed;
+            }
+            else
+            {
+                //If we lost, round performance is an impossibly large number
+                roundPerformance = largeNumber;
+                largeNumber++;
+            }
+            //Try catch in case round performance happens to match another one
+            try{
+                historySoldiers.Add(roundPerformance, numSoldiers);
+                historyArchers.Add(roundPerformance, numArchers);
+                historyWorkers.Add(roundPerformance, numWorkers);
+                historyRefineries.Add(roundPerformance, numRefineries);
+                historyBarracks.Add(roundPerformance, numBarracks);
+            }catch(ArgumentException)
+            {
+                //If it does, just increase the time by an extra desmil point
+                historySoldiers.Add(roundPerformance+.000001f, numSoldiers);
+                historyArchers.Add(roundPerformance + .000001f, numArchers);
+                historyWorkers.Add(roundPerformance + .000001f, numWorkers);
+                historyRefineries.Add(roundPerformance + .000001f, numRefineries);
+                historyBarracks.Add(roundPerformance + .000001f, numBarracks);
+            }
+            //Log round
+            Log("Soldiers: " + numSoldiers);
+            Log("Archers: " + numArchers);
+            Log("Workers: " + numWorkers);
+            Log("Refineries: " + numRefineries);
+            Log("Barracks: " + numBarracks);
+            Log("Round Performance: " + roundPerformance + " seconds");
+            //Set max of these based on learn history
+            maxSoldiers += LearnHistory(historySoldiers, numSoldiers);
+            maxArchers += LearnHistory(historyArchers, numArchers);
+            maxWorkers += LearnHistory(historyWorkers, numWorkers);
+            maxRefineries += LearnHistory(historyRefineries, numRefineries);
+            maxBarracks += LearnHistory(historyBarracks, numBarracks);
+            //If the max is stuck at a local maximum, reset everything to a random number
+            if(localMaxTest > 10)
+            {
+                localMaxTest = 0;
+                float randomNumber = rnd.Next(1, 30);
+                float randomNumberBuilding = rnd.Next(0, 3);
+                maxSoldiers = randomNumber;
+                maxArchers = randomNumber;
+                maxWorkers = randomNumber;
+                maxRefineries = randomNumberBuilding;
+                maxBarracks = randomNumberBuilding;
+            }
+        }
+        /// <summary>
+        /// Generic method to learn from history
+        /// </summary>
+        /// <param name="historyVariable"></param>
+        /// <param name="numVariable"></param>
+        /// <returns></returns>
+        private float LearnHistory(Dictionary<float, float> historyVariable, float numVariable)
+        {
+            //Sets everything to a base that'll be edited after
+            float bestScore = largeNumber;
+            float bestValue = 0;
+            float maxVariable = 0;
+            //Goes through every variable in the dictionary
+            foreach (KeyValuePair<float, float> history in historyVariable)
+            {
+                //If the current key's round performance is less than the best round performance yet
+                if (history.Key < bestScore)
+                {
+                    //set the current key's round performance to the best one, and the current key's value as the best value
+                    bestScore = history.Key;
+                    bestValue = history.Value;
+                }
+            }
+            //If we beat the best local max
+            if(bestScore < currLocalMax)
+            {
+                //Set the local max test to 0 and set the local max to the best score
+                localMaxTest = 0;
+                currLocalMax = bestScore;
+            }
+            //If we can't beat the best performance
+            else
+            {
+                //Set the reset tracker up
+                localMaxTest++;
+            }
+            //If the best score is better or equal to current score
+            if (bestScore < roundPerformance)
+            {
+                //If there are more units with the best score than the current score
+                if (bestValue >= numVariable)
+                {
+                    //Add more units from max
+                    maxVariable++;
+                }
+                else
+                {
+                    //Remove more units from max
+                    maxVariable--;
+                }
+            }
+            //If current score was better than the best score, do the opposite of what we should do for if we were worse
+            else
+            {
+                if (bestValue > numVariable)
+                {
+                    maxVariable--;
+                }
+                else
+                {
+                    maxVariable++;
+                }
+            }
+            //Return that max value
+            return maxVariable;
         }
 
         /// <summary>
@@ -356,6 +508,14 @@ namespace GameManager
         /// </summary>
         public override void InitializeRound()
         {
+            //Set number of units to 0 and reset everything
+            numSoldiers = 0;
+            numWorkers = 0;
+            numRefineries = 0;
+            numArchers = 0;
+            numBarracks = 0;
+            timePassed = 0;
+            previousWins = AgentNbrWins;
             //Debug.Log("PlanningAgent::InitializeRound");
             buildPositions = new List<Vector3Int>();
 
@@ -420,6 +580,8 @@ namespace GameManager
         /// </summary>
         public override void Update()
         {
+            //Set up a timer
+            timePassed += Time.deltaTime;
             UpdateGameState();
             switch (actualPlayerState)
             {
@@ -434,6 +596,7 @@ namespace GameManager
                     //Do what you want in the Army state
                     BaseBuilding();
                     ArmyBuilding();
+                    AttackPhase();
                     break;
                 case PlayerState.Attack:
                     //Do what you want in the Attack state
@@ -467,6 +630,32 @@ namespace GameManager
             {
                 actualPlayerState = PlayerState.Attack;
             }
+
+            //If the barracks count is greater than the previous count
+            if(myBarracks.Count > previousBarracksCount)
+            {
+                //Update previous count to current count and increase number of barracks built tracker
+                previousBarracksCount = myBarracks.Count;
+                numBarracks++;
+            }
+            //If the barracks were destroyed, set the previous barracks count to new barracks count
+            else if(previousBarracksCount > myBarracks.Count)
+            {
+                previousBarracksCount = myBarracks.Count;
+            }
+
+            //If the barracks count is greater than the previous count
+            if (myRefineries.Count > previousRefineriesCount)
+            {
+                //Update previous count to current count and increase number of barracks built tracker
+                previousRefineriesCount = myRefineries.Count;
+                numRefineries++;
+            }
+            //If the barracks were destroyed, set the previous barracks count to new barracks count
+            else if (previousRefineriesCount > myRefineries.Count)
+            {
+                previousRefineriesCount = myRefineries.Count;
+            }
             // For each worker
             foreach (int worker in myWorkers)
             {
@@ -487,16 +676,21 @@ namespace GameManager
             }
         }
 
+        /// <summary>
+        /// Build bases
+        /// </summary>
         private void BaseBuilding()
         {
+            //Heuristic
             valueBuildBase = 1 - myBases.Count;
             valueBuildBarracks = myBases.Count - myBarracks.Count + myRefineries.Count;
             valueBuildRefinery = (myBases.Count + myBarracks.Count)/2 - myRefineries.Count;
 
+            //If base value is higher than other building values
             if(valueBuildBase > valueBuildBarracks && valueBuildBase > valueBuildRefinery)
             {
                 Debug.Log("valueBuildBase Heuristic Works");
-                // If we don't have 2 bases, build a base
+                // If we have enough gold build base
                 if (Gold >= Constants.COST[UnitType.BASE])
                 {
                     mainBaseNbr = -1;
@@ -504,20 +698,22 @@ namespace GameManager
                     BuildBuilding(UnitType.BASE);
                 }
             }
-            else if(valueBuildBarracks > valueBuildBase && valueBuildBarracks > valueBuildRefinery)
+            //If barracks value is higher than other building values
+            else if (valueBuildBarracks > valueBuildBase && valueBuildBarracks > valueBuildRefinery && numBarracks < maxBarracks)
             {
                 Debug.Log("valueBuildBarracks Heuristic Works");
-                // If we don't have any barracks, build a barracks
+                // If we have enough gold, build barracks
                 if (Gold >= Constants.COST[UnitType.BARRACKS])
                 {
                     BuildBuilding(UnitType.BARRACKS);
                     Debug.Log("Building the barracks");
                 }
             }
-            else if (valueBuildRefinery > valueBuildBarracks && valueBuildRefinery > valueBuildBase)
+            //If refinery value is higher than other building values
+            else if (valueBuildRefinery > valueBuildBarracks && valueBuildRefinery > valueBuildBase && numRefineries < maxRefineries)
             {
                 Debug.Log("valueBuildRefinery Heuristic Works");
-                // If we don't have any barracks, build a barracks
+                // If we have enough gold, build refinery
                 if (Gold >= Constants.COST[UnitType.REFINERY])
                 {
                     Debug.Log("Building the refinery");
@@ -534,8 +730,9 @@ namespace GameManager
                 if (baseUnit != null && baseUnit.IsBuilt
                                      && baseUnit.CurrentAction == UnitAction.IDLE
                                      && Gold >= Constants.COST[UnitType.WORKER]
-                                     && myWorkers.Count < MAX_NBR_WORKERS)
+                                     && numWorkers < maxWorkers)
                 {
+                    numWorkers++;
                     Train(baseUnit, UnitType.WORKER);
                 }
             }
@@ -551,7 +748,7 @@ namespace GameManager
             {
                 // Get the barracks
                 Unit barracksUnit = GameManager.Instance.GetUnit(barracksNbr);
-                if (valueTrainArcher >= valueTrainSoldier)
+                if (valueTrainArcher >= valueTrainSoldier && numArchers < maxArchers)
                 {
                     Debug.Log("train archer value amount: " + valueTrainSoldier);
                     // If this barracks still exists, is idle, we need archers, and have gold
@@ -559,9 +756,10 @@ namespace GameManager
                              && barracksUnit.CurrentAction == UnitAction.IDLE
                              && Gold >= Constants.COST[UnitType.ARCHER])
                     {
+                        numArchers++;
                         Train(barracksUnit, UnitType.ARCHER);
                     }
-                }else if(valueTrainSoldier > valueTrainArcher)
+                }else if(valueTrainSoldier > valueTrainArcher && numSoldiers < maxSoldiers)
                 {
                     Debug.Log("train soldier value amount: " + valueTrainSoldier);
                     // If this barracks still exists, is idle, we need soldiers, and have gold
@@ -569,6 +767,7 @@ namespace GameManager
                         && barracksUnit.CurrentAction == UnitAction.IDLE
                         && Gold >= Constants.COST[UnitType.SOLDIER])
                     {
+                        numSoldiers++;
                         Train(barracksUnit, UnitType.SOLDIER);
                     }
                 }

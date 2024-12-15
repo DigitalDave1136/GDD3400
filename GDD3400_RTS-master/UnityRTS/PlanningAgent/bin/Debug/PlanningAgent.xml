@@ -10,6 +10,11 @@
              AI is handled by other classes (like pathfinding).
             </summary> 
         </member>
+        <member name="T:GameManager.PlanningAgent.PlayerState">
+            <summary>
+            Enum for different states
+            </summary>
+        </member>
         <member name="P:GameManager.PlanningAgent.enemyAgentNbr">
             <summary>
             The enemy's agent number
@@ -134,6 +139,14 @@
             destroyed to allow the agent to observe the "win/loss" state
             </summary>
         </member>
+        <member name="M:GameManager.PlanningAgent.LearnHistory(System.Collections.Generic.Dictionary{System.Single,System.Single},System.Single)">
+            <summary>
+            Generic method to learn from history
+            </summary>
+            <param name="historyVariable"></param>
+            <param name="numVariable"></param>
+            <returns></returns>
+        </member>
         <member name="M:GameManager.PlanningAgent.InitializeMatch">
             <summary>
             Called before each match between two agents.  Matches have
@@ -155,6 +168,11 @@
         <member name="M:GameManager.PlanningAgent.Update">
             <summary>
             Update the GameManager - called once per frame
+            </summary>
+        </member>
+        <member name="M:GameManager.PlanningAgent.BaseBuilding">
+            <summary>
+            Build bases
             </summary>
         </member>
     </members>

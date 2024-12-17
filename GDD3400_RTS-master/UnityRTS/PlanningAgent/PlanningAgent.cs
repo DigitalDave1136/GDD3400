@@ -137,42 +137,9 @@ namespace GameManager
         private float valueBuildBarracks = 0;
         private float valueBuildRefinery = 0;
 
-        //Dictionaries
-        Dictionary<float, float> historySoldiers = new Dictionary<float, float>();
-        Dictionary<float, float> historyWorkers = new Dictionary<float, float>();
-        Dictionary<float, float> historyRefineries = new Dictionary<float, float>();
-        Dictionary<float, float> historyArchers = new Dictionary<float, float>();
-        Dictionary<float, float> historyBarracks = new Dictionary<float, float>();
-        //number of units made
-        private float numSoldiers = 0;
+        private float maxWorkers = 20;
         private float numWorkers = 0;
-        private float numRefineries = 0;
-        private float numArchers = 0;
-        private float numBarracks = 0;
 
-        //Round data
-        private float timePassed = 0;
-        private float roundPerformance = 0;
-        private float previousWins = 0;
-
-        //Semi constants
-        private float maxSoldiers = 10;
-        private float maxWorkers = 10;
-        private float maxArchers = 10;
-        private float maxBarracks = 1;
-        private float maxRefineries = 1;
-
-        //For resetting
-        private float localMaxTest = 0;
-        System.Random rnd = new System.Random();
-        private float currLocalMax = 1000000;
-
-        //To deal with base building for count
-        private float previousBarracksCount = 0;
-        private float previousRefineriesCount = 0;
-
-        //Just for large number
-        private float largeNumber = 100000000000;
 
         /// <summary>
         /// Finds all of the possible build locations for a specific UnitType.
@@ -290,7 +257,7 @@ namespace GameManager
         /// <param name="myTroops"></param>
         public void AttackEnemy(List<int> myTroops)
         {
-            if (myTroops.Count > 3)
+            if (myTroops.Count > 0)
             {
                 // For each of my troops in this collection
                 foreach (int troopNbr in myTroops)
@@ -305,6 +272,11 @@ namespace GameManager
                         if (enemyBarracks.Count > 0)
                         {
                             Attack(troopUnit, GameManager.Instance.GetUnit(enemyBarracks[UnityEngine.Random.Range(0, enemyBarracks.Count)]));
+                        }
+                        // If there are bases to attack
+                        else if (enemyBases.Count > 0)
+                        {
+                            Attack(troopUnit, GameManager.Instance.GetUnit(enemyBases[UnityEngine.Random.Range(0, enemyBases.Count)]));
                         }
                         // If there are archers to attack
                         else if (enemyArchers.Count > 0)
@@ -321,11 +293,6 @@ namespace GameManager
                         {
                             Attack(troopUnit, GameManager.Instance.GetUnit(enemyWorkers[UnityEngine.Random.Range(0, enemyWorkers.Count)]));
                         }
-                        // If there are bases to attack
-                        else if (enemyBases.Count > 0)
-                        {
-                            Attack(troopUnit, GameManager.Instance.GetUnit(enemyBases[UnityEngine.Random.Range(0, enemyBases.Count)]));
-                        }
                         // If there are refineries to attack
                         else if (enemyRefineries.Count > 0)
                         {
@@ -334,6 +301,7 @@ namespace GameManager
                     }
                 }
             }
+            /*
             else if (myTroops.Count > 0)
             {
                 // Find a good rally point
@@ -356,7 +324,7 @@ namespace GameManager
                         break;
                     }
                 }
-            }
+            }*/
         }
         #endregion
 
@@ -370,126 +338,6 @@ namespace GameManager
         {
             Debug.Log("Nbr Wins: " + AgentNbrWins);
             //Debug.Log("PlanningAgent::Learn");
-            
-            //If we won
-            if (previousWins < AgentNbrWins)
-            {
-                //Round performance is time passed
-                roundPerformance = timePassed;
-            }
-            else
-            {
-                //If we lost, round performance is an impossibly large number
-                roundPerformance = largeNumber;
-                largeNumber++;
-            }
-            //Try catch in case round performance happens to match another one
-            try{
-                historySoldiers.Add(roundPerformance, numSoldiers);
-                historyArchers.Add(roundPerformance, numArchers);
-                historyWorkers.Add(roundPerformance, numWorkers);
-                historyRefineries.Add(roundPerformance, numRefineries);
-                historyBarracks.Add(roundPerformance, numBarracks);
-            }catch(ArgumentException)
-            {
-                //If it does, just increase the time by an extra desmil point
-                historySoldiers.Add(roundPerformance+.000001f, numSoldiers);
-                historyArchers.Add(roundPerformance + .000001f, numArchers);
-                historyWorkers.Add(roundPerformance + .000001f, numWorkers);
-                historyRefineries.Add(roundPerformance + .000001f, numRefineries);
-                historyBarracks.Add(roundPerformance + .000001f, numBarracks);
-            }
-            //Log round
-            Log("Soldiers: " + numSoldiers);
-            Log("Archers: " + numArchers);
-            Log("Workers: " + numWorkers);
-            Log("Refineries: " + numRefineries);
-            Log("Barracks: " + numBarracks);
-            Log("Round Performance: " + roundPerformance + " seconds");
-            //Set max of these based on learn history
-            maxSoldiers += LearnHistory(historySoldiers, numSoldiers);
-            maxArchers += LearnHistory(historyArchers, numArchers);
-            maxWorkers += LearnHistory(historyWorkers, numWorkers);
-            maxRefineries += LearnHistory(historyRefineries, numRefineries);
-            maxBarracks += LearnHistory(historyBarracks, numBarracks);
-            //If the max is stuck at a local maximum, reset everything to a random number
-            if(localMaxTest > 10)
-            {
-                localMaxTest = 0;
-                float randomNumber = rnd.Next(1, 30);
-                float randomNumberBuilding = rnd.Next(0, 3);
-                maxSoldiers = randomNumber;
-                maxArchers = randomNumber;
-                maxWorkers = randomNumber;
-                maxRefineries = randomNumberBuilding;
-                maxBarracks = randomNumberBuilding;
-            }
-        }
-        /// <summary>
-        /// Generic method to learn from history
-        /// </summary>
-        /// <param name="historyVariable"></param>
-        /// <param name="numVariable"></param>
-        /// <returns></returns>
-        private float LearnHistory(Dictionary<float, float> historyVariable, float numVariable)
-        {
-            //Sets everything to a base that'll be edited after
-            float bestScore = largeNumber;
-            float bestValue = 0;
-            float maxVariable = 0;
-            //Goes through every variable in the dictionary
-            foreach (KeyValuePair<float, float> history in historyVariable)
-            {
-                //If the current key's round performance is less than the best round performance yet
-                if (history.Key < bestScore)
-                {
-                    //set the current key's round performance to the best one, and the current key's value as the best value
-                    bestScore = history.Key;
-                    bestValue = history.Value;
-                }
-            }
-            //If we beat the best local max
-            if(bestScore < currLocalMax)
-            {
-                //Set the local max test to 0 and set the local max to the best score
-                localMaxTest = 0;
-                currLocalMax = bestScore;
-            }
-            //If we can't beat the best performance
-            else
-            {
-                //Set the reset tracker up
-                localMaxTest++;
-            }
-            //If the best score is better or equal to current score
-            if (bestScore < roundPerformance)
-            {
-                //If there are more units with the best score than the current score
-                if (bestValue >= numVariable)
-                {
-                    //Add more units from max
-                    maxVariable++;
-                }
-                else
-                {
-                    //Remove more units from max
-                    maxVariable--;
-                }
-            }
-            //If current score was better than the best score, do the opposite of what we should do for if we were worse
-            else
-            {
-                if (bestValue > numVariable)
-                {
-                    maxVariable--;
-                }
-                else
-                {
-                    maxVariable++;
-                }
-            }
-            //Return that max value
-            return maxVariable;
         }
 
         /// <summary>
@@ -508,14 +356,7 @@ namespace GameManager
         /// </summary>
         public override void InitializeRound()
         {
-            //Set number of units to 0 and reset everything
-            numSoldiers = 0;
             numWorkers = 0;
-            numRefineries = 0;
-            numArchers = 0;
-            numBarracks = 0;
-            timePassed = 0;
-            previousWins = AgentNbrWins;
             //Debug.Log("PlanningAgent::InitializeRound");
             buildPositions = new List<Vector3Int>();
 
@@ -581,29 +422,7 @@ namespace GameManager
         public override void Update()
         {
             //Set up a timer
-            timePassed += Time.deltaTime;
             UpdateGameState();
-            switch (actualPlayerState)
-            {
-                case PlayerState.Idle:
-                    //Do what you want in the idle state
-                    break;
-                case PlayerState.Base:
-                    //Do what you want in the Base state
-                    BaseBuilding();
-                    break;
-                case PlayerState.Army:
-                    //Do what you want in the Army state
-                    BaseBuilding();
-                    ArmyBuilding();
-                    AttackPhase();
-                    break;
-                case PlayerState.Attack:
-                    //Do what you want in the Attack state
-                    ArmyBuilding();
-                    AttackPhase();
-                    break;
-            }
             // If we have at least one base, assume the first one is our "main" base
             if (myBases.Count > 0)
             {
@@ -616,46 +435,11 @@ namespace GameManager
                 mainMineNbr = mines[0];
                 return;
             }
-            //If we're missing a building and we still can collect resources, then we rebuild
-            if ((myBases.Count == 0 || myBarracks.Count == 0) && mines.Count > 0 && Gold >= Constants.COST[UnitType.BARRACKS])
-            {
-                //Change to build base state
-                actualPlayerState = PlayerState.Base;
-            }
-            else if (mySoldiers.Count + myArchers.Count < 10 && myBarracks.Count > 0 && Gold >= Constants.COST[UnitType.SOLDIER])
-            {
-                actualPlayerState = PlayerState.Army;
-            }
-            else
-            {
-                actualPlayerState = PlayerState.Attack;
-            }
+            BaseBuilding();
+            ArmyBuilding();
+            AttackPhase();
 
-            //If the barracks count is greater than the previous count
-            if(myBarracks.Count > previousBarracksCount)
-            {
-                //Update previous count to current count and increase number of barracks built tracker
-                previousBarracksCount = myBarracks.Count;
-                numBarracks++;
-            }
-            //If the barracks were destroyed, set the previous barracks count to new barracks count
-            else if(previousBarracksCount > myBarracks.Count)
-            {
-                previousBarracksCount = myBarracks.Count;
-            }
-
-            //If the barracks count is greater than the previous count
-            if (myRefineries.Count > previousRefineriesCount)
-            {
-                //Update previous count to current count and increase number of barracks built tracker
-                previousRefineriesCount = myRefineries.Count;
-                numRefineries++;
-            }
-            //If the barracks were destroyed, set the previous barracks count to new barracks count
-            else if (previousRefineriesCount > myRefineries.Count)
-            {
-                previousRefineriesCount = myRefineries.Count;
-            }
+            
             // For each worker
             foreach (int worker in myWorkers)
             {
@@ -683,8 +467,8 @@ namespace GameManager
         {
             //Heuristic
             valueBuildBase = 1 - myBases.Count;
-            valueBuildBarracks = myBases.Count - myBarracks.Count + myRefineries.Count;
-            valueBuildRefinery = (myBases.Count + myBarracks.Count)/2 - myRefineries.Count;
+            valueBuildBarracks = myBases.Count - myBarracks.Count + myRefineries.Count/3;
+            valueBuildRefinery = (myBases.Count + myBarracks.Count)/2 - myRefineries.Count/2;
 
             //If base value is higher than other building values
             if(valueBuildBase > valueBuildBarracks && valueBuildBase > valueBuildRefinery)
@@ -699,7 +483,7 @@ namespace GameManager
                 }
             }
             //If barracks value is higher than other building values
-            else if (valueBuildBarracks > valueBuildBase && valueBuildBarracks > valueBuildRefinery && numBarracks < maxBarracks)
+            else if (valueBuildBarracks > valueBuildBase && valueBuildBarracks > valueBuildRefinery)
             {
                 Debug.Log("valueBuildBarracks Heuristic Works");
                 // If we have enough gold, build barracks
@@ -710,7 +494,7 @@ namespace GameManager
                 }
             }
             //If refinery value is higher than other building values
-            else if (valueBuildRefinery > valueBuildBarracks && valueBuildRefinery > valueBuildBase && numRefineries < maxRefineries)
+            else if (valueBuildRefinery > valueBuildBarracks && valueBuildRefinery > valueBuildBase)
             {
                 Debug.Log("valueBuildRefinery Heuristic Works");
                 // If we have enough gold, build refinery
@@ -748,7 +532,7 @@ namespace GameManager
             {
                 // Get the barracks
                 Unit barracksUnit = GameManager.Instance.GetUnit(barracksNbr);
-                if (valueTrainArcher >= valueTrainSoldier && numArchers < maxArchers)
+                if (valueTrainArcher >= valueTrainSoldier)
                 {
                     Debug.Log("train archer value amount: " + valueTrainSoldier);
                     // If this barracks still exists, is idle, we need archers, and have gold
@@ -756,10 +540,9 @@ namespace GameManager
                              && barracksUnit.CurrentAction == UnitAction.IDLE
                              && Gold >= Constants.COST[UnitType.ARCHER])
                     {
-                        numArchers++;
                         Train(barracksUnit, UnitType.ARCHER);
                     }
-                }else if(valueTrainSoldier > valueTrainArcher && numSoldiers < maxSoldiers)
+                }else if(valueTrainSoldier > valueTrainArcher)
                 {
                     Debug.Log("train soldier value amount: " + valueTrainSoldier);
                     // If this barracks still exists, is idle, we need soldiers, and have gold
@@ -767,7 +550,6 @@ namespace GameManager
                         && barracksUnit.CurrentAction == UnitAction.IDLE
                         && Gold >= Constants.COST[UnitType.SOLDIER])
                     {
-                        numSoldiers++;
                         Train(barracksUnit, UnitType.SOLDIER);
                     }
                 }
